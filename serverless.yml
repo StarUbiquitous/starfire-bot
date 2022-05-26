@@ -1,0 +1,28 @@
+component: scf
+name: starfire-bot
+stage: prod
+
+inputs:
+  name: ${name}-${stage}
+  src:
+    src: ./
+    exclude:
+      - .env
+  entry_file: main
+  type: web
+  runtime: Go1
+  namespace: default
+  region: ap-hongkong
+  memorySize: 512
+  timeout: 3
+  events:
+    - apigw:
+        parameters:
+          serviceId: service-55x1b56w
+          protocols:
+            - http
+            - https
+          environment: release
+          endpoints:
+            - path: /
+              method: ANY
