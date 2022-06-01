@@ -17,7 +17,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [1.18.x]
+        node: [ 16 ]
         platform: [ubuntu-latest]
     steps:
       - name: Setup os name to lowercase
@@ -38,33 +38,41 @@ jobs:
         with:
           ref: ${{ steps.split.outputs._2 }}
 
-      - name: Setup Go ${{ matrix.go-version }}
-        uses: actions/setup-go@v3
+      - name: Setup Node ${{ matrix.node }}
+        uses: actions/setup-node@v3.2.0
         with:
-          go-version: ${{ matrix.go-version }}
+          node-version: ${{ matrix.node }}
+          cache: npm
 
-      # Get values for cache paths to be used in later steps
-      - name: Get cache directory
-        id: cache-paths
-        run: |
-          echo "::set-output name=go-cache::$(go env GOCACHE)"
-          echo "::set-output name=go-mod-cache::$(go env GOMODCACHE)"
+      - name: Setup yarn
+        run: npm install -g yarn
 
-      - name: Cache go modules
+      - name: Setup Nodejs with yarn caching
+        uses: actions/setup-node@v3.2.0
+        with:
+          node-version: ${{ matrix.node }}
+          cache: yarn
+
+      - name: Cache dependencies
         uses: actions/cache@v3
+        id: node-modules-cache
         with:
           path: |
-            ${{ steps.cache-paths.outputs.go-cache }}
-            ${{ steps.cache-paths.outputs.go-mod-cache }}
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: ${{ runner.os }}-go-
+            node_modules
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn
+
+      - name: Install package.json dependencies with Yarn
+        if: steps.node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn --frozen-lockfile
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+          HUSKY_SKIP_INSTALL: true
 
       - name: Build
-        run: go build -o main main.go
-        env:
-          GOOS: ${{ steps.os-name.outputs.lowercase }}
-          GOARCH: amd64
-          GO111MODULE: on
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: yarn build
 
       - name: Setup Serverless
         uses: teakowa/setup-serverless@v2

@@ -1,20 +1,27 @@
-component: scf
+component: koa
 name: starfire-bot
 stage: prod
 
 inputs:
   name: ${name}-${stage}
-  src:
-    src: ./
-    exclude:
-      - .env
-  entry_file: main
-  type: web
-  runtime: Go1
+  runtime: Nodejs16.13
+  entryFile: index.js
+  src: ./dist
+  functionConf:
+    timeout: 10
+    memorySize: 128
+    eip: true
+    environment:
+      variables:
+        APP_ID: ${env:APP_ID}
+        PRIVATE_KEY: ${env:PRIVATE_KEY}
+        API_URL: ${env:API_URL}
+        TZ: Asia/Shanghai
+        SENTRY_DSN: ${env:SENTRY_DSN}
+        SENTRY_ENVIRONMENT: ${env:SENTRY_ENVIRONMENT}
+        UP_HEARTBEAT: ${env:UP_HEARTBEAT}
   namespace: default
   region: ap-hongkong
-  memorySize: 512
-  timeout: 3
   events:
     - apigw:
         parameters:

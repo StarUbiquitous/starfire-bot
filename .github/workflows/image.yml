@@ -1,0 +1,25 @@
+name: Release Images
+
+on:
+  schedule:
+    - cron: '0 8 * * *' # everyday at 8am UTC
+  release:
+    types: [ published ]
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  registry:
+    name: Build & Push
+    uses: XNXKTech/workflows/.github/workflows/docker-build.yml@main
+    with:
+      registry: 'xnxktech.tencentcloudcr.com'
+    secrets:
+      USERNAME: ${{ secrets.REGISTRY_USER }}
+      PASSWORD: ${{ secrets.REGISTRY_PASSWORD }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USER }}
+      DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}

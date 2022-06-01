@@ -1,0 +1,17 @@
+.git*
+tests
+dist
+lib
+node_modules
+.editorconfig
+.eslint*
+.prettier*
+*.md
+Dockerfile
+*.js
+LICENSE*
+serverless.yml
+.env*
+.docker*
+.releaserc.json
+scf_bootstrap
