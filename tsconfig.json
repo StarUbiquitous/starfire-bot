@@ -1,12 +1,16 @@
 {
   "compilerOptions": {
     "module": "commonjs",
+    "preserveConstEnums": true,
+    "moduleResolution": "node",
+    "strict": true,
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
+    "target": "es2022",
     "sourceMap": true,
     "outDir": "./lib",
     "baseUrl": "./",
