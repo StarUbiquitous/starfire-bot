@@ -15,5 +15,13 @@
     "outDir": "./lib",
     "baseUrl": "./",
     "incremental": true
-  }
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.d.ts",
+    "**/*.spec.ts"
+  ],
 }
